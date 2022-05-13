@@ -22,7 +22,7 @@ function App() {
     const searchLocation = async (search) => {
         if(search)
             try {
-                let  query = 'http://api.openweathermap.org/geo/1.0/direct?q=' + search + '&limit=5&appid=78288220edbc659e816bd8ade5b4fa3e';
+                let  query = 'https://api.openweathermap.org/geo/1.0/direct?q=' + search + '&limit=5&appid=78288220edbc659e816bd8ade5b4fa3e';
                 const res = await fetch(query, {method: 'GET'});
                 const data = await res.json();
                 setResults(data);
