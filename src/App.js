@@ -1,65 +1,52 @@
-import { useState, useEffect, useReducer } from 'react';
+import { useState } from 'react';
 import './App.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSun, faCloud, faCloudSun, faSmog, faSnowflake, faCloudBolt, faCloudRain } from '@fortawesome/free-solid-svg-icons';
-
-const initialState = {
-    isLoading: true,
-    error: false
-}
-
-function reducer(state, action) {
-    switch (action.type) {
-        case 'isLoading':
-            return {...state, isLoading: true}
-        case 'doneLoading':
-            return {...state, isLoading: false}
-        case 'errorLoading':
-            return {isLoading: false, error: true}
-        default:
-            return state
-    }
-}
+import { faSun, faCloud, faCloudSun, faSmog, faSnowflake, faCloudBolt, faCloudRain, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
+import useFetchForecast from './useFetchForecast';
 
 function App() {
 
     const [search, setSearch] = useState('')
     const [results, setResults] = useState([])
-    const [location, setLocation] = useState({})
-    const [forecast, setForecast] = useState([])
-    const [units, setUnits] = useState({unit: 'F', system: 'imperial'})
-    const [state, dispatch] = useReducer(reducer, initialState)
+    const [location, setLocation] = useState({lat: 39.9527237, lon: -75.1635262, name: 'Philadelphia'})
+    //const [forecast, setForecast] = useState([])
+    const [units, setUnits] = useState({unit: 'F', system: 'imperial', speed: 'mph'})
     const [toggle, setToggle] = useState('slideLeft')
+    const forecast = useFetchForecast(location, units)
 
     const searchLocation = async (search) => {
-        try {
-            let  query = 'http://api.openweathermap.org/geo/1.0/direct?q=' + search + '&limit=5&appid=78288220edbc659e816bd8ade5b4fa3e';
-            const res = await fetch(query, {method: 'GET'});
-            const data = await res.json();
-            setResults(data);
-        }
-        catch {
-            window.alert("Unable to get location data. Please try again later.")
-        }
+        if(search)
+            try {
+                let  query = 'http://api.openweathermap.org/geo/1.0/direct?q=' + search + '&limit=5&appid=78288220edbc659e816bd8ade5b4fa3e';
+                const res = await fetch(query, {method: 'GET'});
+                const data = await res.json();
+                setResults(data);
+            }
+            catch {
+                window.alert("Unable to get location data. Please try again later.")
+            }
+        return
     }
 
     const displayResults = results !== [] ? 
         <div>
+            <div className='results'>
             {results.map(elem => 
                 <div key={elem.name + elem.state} onClick={() => {
                     setLocation({lat: elem.lat, lon: elem.lon, name: elem.name});
                     setResults([]);
                     //fetchForecast(elem.lat, elem.lon);
-                    //console.log(forecast)
-                    fetchForecast(elem.lat, elem.lon);     
+                    //console.log(forecast)   
                 }}>
                     <div>{elem.name}, {elem.state}</div>
                     <div>{elem.country}</div>
                 </div>)}
+            </div>
+            <div className='closeResults' onClick={() => {setResults([])}} />
         </div> : 
         <div></div>
         
-    const fetchForecast = async(lat, lon) => {    
+    /* const fetchForecast = async(lat, lon) => {    
         dispatch({type: 'isLoading'})  
         try {
             let query = 'https://api.openweathermap.org/data/2.5/onecall?lat=' + lat + '&lon=' + lon +'&appid=78288220edbc659e816bd8ade5b4fa3e&units=' + units.system;
@@ -81,11 +68,10 @@ function App() {
         console.log('Initial Location')
     }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-    /* useEffect(() => {
+    useEffect(() => {
         console.log('Changed Units')  
         fetchForecast(location.lat, location.lon);
-    }, [units]) */
-
+    }, [units]) */  
 
     const degToCompass = (deg) => {
         const arr = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"];
@@ -119,18 +105,22 @@ function App() {
     }
 
     const toggleSwitch = () => {
-        if (toggle === 'slideLeft') {        
+        console.log('Changed Units')
+        if (toggle === 'slideLeft') {
+            setUnits({unit: 'C', system: 'metric', speed: 'mps'})   
             return setToggle('slideRight')
         }
-        else
-            return setToggle('slideLeft')       
+        else {
+            setUnits({unit: 'F', system: 'imperial', speed: 'mph'})  
+            return setToggle('slideLeft')
+        }       
     }
 
     return (
         <div className="App">           
             <div className='header'>
-                <div>
-                    {Object.keys(location).length === 0 ? <div>Current Location: Not Set</div> : <div>Current Location: {location.lat}, {location.lon}</div>}
+                <div className='coord'>
+                    {Object.keys(location).length === 0 ? <div>Current Location: Not Set</div> : <div>Coordinates: {location.lat}, {location.lon}</div>}
                 </div>
                 <div className='toggleSwitch'>                     
                     <div className='switch'>                       
@@ -140,28 +130,45 @@ function App() {
                     <div className={toggle} onClick={() => toggleSwitch()}/>
                 </div>                 
             </div>
-            <div className='search-bar'>                 
-                <input type='text' placeholder='Location' onChange={event => setSearch(event.target.value)}/>
-                <button onClick={(event) => {
-                    event.preventDefault();
-                    searchLocation(search);
-                }}>Submit</button>
-            </div>
-            {displayResults}
-            {state.isLoading ?
+            <div className='searchBar'>
+                <div className='search'>                
+                    <input type='text' placeholder='Location' onChange={event => setSearch(event.target.value)} onKeyDown={event => {if (event.key === 'Enter') searchLocation(search)}}/>
+                    <button onClick={(event) => {
+                        event.preventDefault();
+                        searchLocation(search);
+                    }}><FontAwesomeIcon icon={faMagnifyingGlass} /></button>
+                </div>
+                <div>
+                   {results.length !== 0 ? <div>{displayResults}</div> : <div></div>}
+                </div> 
+            </div>           
+            {Object.keys(forecast).length === 0 ?
                 <div></div> :
                 <div className='forecast'>
                     <div className='forecastToday'>
-                        <div>
-                            <h3>{location.name}</h3>
-                            {getIcon(forecast.current.weather[0].id)}
-                            <h1>{Math.round(forecast.current.temp)}&#176;{units.unit}</h1>
-                            <h4>{forecast.current.weather[0].main}</h4>
+                        <div className='main'>
+                            <h2>{location.name}</h2>
+                            <div>
+                                <div>{getIcon(forecast.current.weather[0].id)}</div>
+                                <div>{Math.round(forecast.current.temp)}&#176;{units.unit}</div>
+                            </div>                            
                         </div>
-                        <div>
-                            <h5>Feels like {forecast.current.feels_like}</h5>
-                            <h5>Humidity {forecast.current.humidity}%</h5>
-                            <h5>Wind {forecast.current.wind_speed} mph {degToCompass(forecast.current.wind_deg)}</h5>
+                        <div className='details'>
+                            <div>
+                                <label />
+                                <div>{forecast.current.weather[0].main}</div>
+                            </div>
+                            <div>
+                                <label>Feels like</label> <div>{Math.round(forecast.current.feels_like)}&#176;{units.unit}</div>
+                            </div>
+                            <div>
+                                <label>Humidity</label>
+                                <div> {forecast.current.humidity}%</div>
+                            </div>
+                            <div>
+                                <label>Wind</label>
+                                <div>{Math.round(forecast.current.wind_speed)} {units.speed} {degToCompass(forecast.current.wind_deg)}</div>
+                            </div>
                         </div>
                     </div>
                     <div className='forecastDaily'>
@@ -169,12 +176,11 @@ function App() {
                             forecast.daily.map(elem => 
                                 <div key={elem.dt}>
                                     <h4>{getDate(elem.dt)}</h4>
-                                    {getIcon(elem.weather[0].id)}
-                                    <h5>{Math.round(elem.temp.max)}&#176;{units.unit}/{Math.round(elem.temp.min)}&#176;{units.unit}</h5>
-                                    
+                                    <div>{getIcon(elem.weather[0].id)}</div>
+                                    <p>{Math.round(elem.temp.max)}&#176;{units.unit}/{Math.round(elem.temp.min)}&#176;{units.unit}</p>                                   
                                 </div>
                             )
-                        }
+                        }                        
                     </div>
                 </div>
             }          

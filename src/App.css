@@ -1,5 +1,7 @@
 .App {
   text-align: center;
+  min-width: 280px;
+  padding-bottom: 50px;
 }
 
 .header {
@@ -9,12 +11,17 @@
     opacity: 0.8;
     height: 40px;
     align-items: center;
+    margin-bottom: 50px;
 }
 
 .header > div {
     height: 20px;
     margin-bottom: 10px;
     opacity: 1;
+}
+
+.coord {
+    margin-left: 10px;
 }
 
 .switch {
@@ -52,4 +59,196 @@
     background-color: gray;
     border-radius: 50%;
     cursor: pointer; 
+}
+
+.searchBar {
+    background-color: aquamarine;
+    max-width: 426px;
+    min-width: 175px;
+    width: 50%;
+    margin: auto;
+}
+
+.search {
+    display: flex;
+}
+
+.searchBar > div > input {
+    width: 100%;
+    border: 1px solid gray;
+    padding: 2px;
+    border-top-left-radius: 2px;
+    border-bottom-left-radius: 2px;
+    border-right: none;
+    height: 20px;
+    font-size: 16px;
+}
+
+.searchBar > div > input:focus {
+    outline: none;
+}
+
+.searchBar > div > button {
+    border-width: 1px 1px 1px 0px;
+    border-style: solid;
+    border-color: gray;
+    border-radius: 0px;
+    padding: 2px 4px 2px 4px;
+    background-color: white;
+    border-top-right-radius: 2px;
+    border-bottom-right-radius: 2px;
+    cursor: pointer;
+}
+
+.results {
+    background-color: white;
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%);
+    width: 50%;
+    max-width: 426px;
+    min-width: 175px;
+    border-bottom-right-radius: 2px;
+    border-bottom-left-radius: 2px;
+    z-index: 1;
+}
+
+.results > div {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px;
+}
+
+.results > div:not(:last-of-type) {
+    border-bottom: 1px solid black;
+}
+
+.closeResults {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+}
+
+.forecast {
+    margin-top: 50px;
+}
+
+.forecastToday {
+    display: flex;
+    background-color: lightgray;
+    justify-content: center;
+    flex-wrap: wrap;
+    width: 90vw;
+    max-width: 600px;
+    margin: auto;
+    min-width: 200px;
+    border-radius: 10px;
+}
+
+.forecastToday > div {
+    width: 50%;
+    min-width: 200px;
+}
+
+.main {
+    height: 200px;
+}
+
+.main > div {
+    display: flex;
+    justify-content: center;
+    font-size: 48px;
+}
+
+.main > div div {     
+    padding: 10px;
+}
+
+.details {
+    display: flex;
+    flex-direction: column;
+    height: 150px ;
+    align-self: center;
+    font-size: 18px;
+}
+
+.details > div {
+    display: flex;
+    justify-content: space-between;
+    width: 90%;
+    margin: auto;
+}
+
+.details > div:first-of-type {
+    font-weight: 600;
+}
+
+.details > div:not(:first-of-type) {
+    border-bottom: 1px solid black;
+    padding-bottom: 2px;
+}
+
+.forecastDaily > div div{
+    font-size: 36px;
+}
+
+.forecastDaily > div p{
+    font-size: 18px;
+}
+
+@media screen and (min-width: 445px) {
+    .forecastDaily {
+        margin-top: 40px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: center;
+        padding: 10px;
+    }    
+
+    .forecastDaily > div{
+        background-color: lightgray;
+        width: 100px;
+        border-radius: 10px;
+    }
+}
+
+@media screen and (max-width: 444px) {
+    .coord {
+        font-size: 14px;
+    }
+
+    .main {
+        height: 175px;
+    }
+
+    .details {
+        padding-bottom: 20px;
+    }
+
+    .forecastDaily {
+        margin: auto;
+        margin-top: 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        background-color: lightgray;
+        width: 90vw;
+        min-width: 200px;
+        border-radius: 10px;
+    }
+
+    .forecastDaily > div{
+        display: flex;
+        justify-content: space-evenly;
+        align-items: center;
+        width: 90%;
+        margin: auto;
+    }
+
+    .forecastDaily > div:not(:last-of-type)  {
+        border-bottom: 1px solid black;
+    }
 }
