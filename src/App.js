@@ -3,6 +3,11 @@ import './App.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSun, faCloud, faCloudSun, faSmog, faSnowflake, faCloudBolt, faCloudRain, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import useFetchForecast from './useFetchForecast';
+import clear from './images/clear.jpg'
+import cloudy from './images/cloudy.jpg'
+import fog from './images/fog.jpg'
+import rain from './images/rain.jpg'
+import snow from './images/snow.jpg'
 
 function App() {
 
@@ -88,13 +93,13 @@ function App() {
     const getIcon = (id) => {
         if (id === 800)
             return <FontAwesomeIcon icon={faSun} />
-        else if (id >= 803)
+        else if (id >= 803) 
             return <FontAwesomeIcon icon={faCloud} />
         else if (id >= 801)
             return <FontAwesomeIcon icon={faCloudSun} />
         else if (id >= 700)
             return <FontAwesomeIcon icon={faSmog} />
-        else if (id >= 600)
+        else if (id >= 600)    
             return <FontAwesomeIcon icon={faSnowflake} />
         else if (id >= 300)
             return <FontAwesomeIcon icon={faCloudRain} />
@@ -116,8 +121,25 @@ function App() {
         }       
     }
 
+    const changeBackground = () => {
+        if (Object.keys(forecast).length === 0)
+            return
+        else if (forecast.current.weather[0].id >= 803)
+            return {backgroundImage: `url(${cloudy})`}
+        else if (forecast.current.weather[0].id >= 800)
+            return {backgroundImage: `url(${clear})`}
+        else if (forecast.current.weather[0].id >= 700)
+            return {backgroundImage: `url(${fog})`}
+        else if (forecast.current.weather[0].id >= 600)
+            return {backgroundImage: `url(${snow})`}
+        else if (forecast.current.weather[0].id >= 200)
+            return {backgroundImage: `url(${rain})`}
+        else
+            return
+    }
+
     return (
-        <div className="App">           
+        <div className="App" style={changeBackground()}>           
             <div className='header'>
                 <div className='coord'>
                     {Object.keys(location).length === 0 ? <div>Current Location: Not Set</div> : <div>Coordinates: {location.lat}, {location.lon}</div>}
