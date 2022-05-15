@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './App.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSun, faCloud, faCloudSun, faSmog, faSnowflake, faCloudBolt, faCloudRain, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
-import useFetchForecast from './useFetchForecast';
+//import useFetchForecast from './useFetchForecast';
 import clear from './images/clear.jpg'
 import cloudy from './images/cloudy.jpg'
 import fog from './images/fog.jpg'
@@ -14,10 +14,10 @@ function App() {
     const [search, setSearch] = useState('')
     const [results, setResults] = useState([])
     const [location, setLocation] = useState({lat: 39.9527237, lon: -75.1635262, name: 'Philadelphia'})
-    //const [forecast, setForecast] = useState([])
+    const [forecast, setForecast] = useState([])
     const [units, setUnits] = useState({unit: 'F', system: 'imperial', speed: 'mph'})
     const [toggle, setToggle] = useState('slideLeft')
-    const forecast = useFetchForecast(location, units)
+    //const forecast = useFetchForecast(location, units)
 
     const searchLocation = async (search) => {
         if(search)
@@ -39,9 +39,7 @@ function App() {
             {results.map(elem => 
                 <div key={elem.name + elem.state} onClick={() => {
                     setLocation({lat: elem.lat, lon: elem.lon, name: elem.name});
-                    setResults([]);
-                    //fetchForecast(elem.lat, elem.lon);
-                    //console.log(forecast)   
+                    setResults([]);  
                 }}>
                     <div>{elem.name}, {elem.state}</div>
                     <div>{elem.country}</div>
@@ -50,33 +48,22 @@ function App() {
             <div className='closeResults' onClick={() => {setResults([])}} />
         </div> : 
         <div></div>
-        
-    /* const fetchForecast = async(lat, lon) => {    
-        dispatch({type: 'isLoading'})  
-        try {
-            let query = 'https://api.openweathermap.org/data/2.5/onecall?lat=' + lat + '&lon=' + lon +'&appid=78288220edbc659e816bd8ade5b4fa3e&units=' + units.system;
-            const res = await fetch(query, {method: 'GET'});
-            const data = await res.json();
-            setForecast(data);
-            dispatch({type: 'doneLoading'})
-            console.log(forecast)
-        }
-        catch {
-            window.alert("Unable to get weather data. Please try again later.")
-            dispatch({type: 'errorLoading'})
-        }
-    }  
-
+    
     useEffect(() => {
-        setLocation({lat: 39.9527237, lon: -75.1635262, name: 'Philadelphia'}); 
-        fetchForecast(39.9527237, -75.1635262)
-        console.log('Initial Location')
-    }, []) // eslint-disable-line react-hooks/exhaustive-deps
-
-    useEffect(() => {
-        console.log('Changed Units')  
-        fetchForecast(location.lat, location.lon);
-    }, [units]) */  
+        async function fetchForecast(lat, lon, unit) {
+            try {
+                let query = 'https://api.openweathermap.org/data/2.5/onecall?lat=' + lat + '&lon=' + lon +'&appid=78288220edbc659e816bd8ade5b4fa3e&units=' + unit;
+                const res = await fetch(query, {method: 'GET'});
+                const data = await res.json();
+                setForecast(data);
+                //console.log(forecast)
+            }
+            catch {
+                window.alert("Unable to get weather data. Please try again later.")
+            }
+        }
+        fetchForecast(location.lat, location.lon, units.system);
+    }, [location, units])
 
     const degToCompass = (deg) => {
         const arr = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"];
